@@ -3,4 +3,4 @@ Studies have shown that vibration applied to the body can influence the autonomi
 
 OpenWave is a platform for experimenting with vibration stimulation using the vibration motor in Wear OS smartwatches. The watch can be programmed to generate two different frequencies simultaneously and vibration can be applied continuously even with the screen off.
 
-[!screenshot](screenshot.png)
+![screenshot](https://user-images.githubusercontent.com/831279/115149812-64cb1200-a02b-11eb-9c75-a7f44c9309d8.png)
