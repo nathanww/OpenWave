@@ -31,9 +31,11 @@ import org.w3c.dom.Text;
 
 import java.util.Map;
 
+import static android.content.Context.VIBRATOR_SERVICE;
+
 
 public class MainActivity extends WearableActivity {
-int mainFreq=0;
+int mainFreq=5;
 int modFreq=0;
 int power=255;
 String[] freqDes={"7 Hz","10 Hz","15 Hz","20 Hz","25 Hz","Max"};
@@ -81,21 +83,38 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
     }
 
     int[] modulate(int[] pattern1, int[] pattern2) {
-        int[] result=new int[10000];
-        for (int i=0; i< 10000; i++) {
-            float temp1=(float)(pattern1[i])/255f;
-            float temp2=(float)(pattern2[i])/255f;
-            result[i]=(int)Math.round((temp1*temp2)*255f);
+        int[] result=new int[1000];
+        int old=1000;
+        int COMPRESSION_THRESH=0; // don't change the otuput value until its different from previous value by this
+        if (modFreqs[modFreq] < 1) {
+            COMPRESSION_THRESH=50; // having fewer changes in the signal can reduce choppiness at low frequencies but makes the signal worse at high frequencies
         }
-        //Log.i("modulated",test);
+        for (int i=0; i< 1000; i++) {
+                float temp1 = (float) (pattern1[i]) / 255f;
+                float temp2 = (float) (pattern2[i]) / 255f;
+                int temp=(int) Math.round((temp1 * temp2) * 255f);
+                if (Math.abs(temp-old) > COMPRESSION_THRESH) {
+                    result[i] = temp;
+                    old = temp;
+                }
+                else {
+                    result[i]=old;
+                }
+
+
+
+
+
+        }
+
         return result;
     }
 
     int[] createPattern(int maxPower, double freq, boolean squareWave) {
-        int[] pattern=new int[10000];
-        double scale=50/freq;
+        int[] pattern=new int[1000];
+        double scale=5/freq;
         //this completes one cycle every 20, giving us a 50 hz pulse sequence
-        for (int i=0; i< 10000; i++) {
+        for (int i=0; i< 1000; i++) {
             double result;
             if (freq<0) { //full on mode
                 result=1;
@@ -111,15 +130,16 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
                 }
             }
             pattern[i]=(int)Math.round(result*maxPower);
-
+           
         }
         return pattern;
     }
 
     long[] createDurations() {
-        long[] pattern = new long[10000];
-        for (int i = 0; i < 10000; i++) {
-            pattern[i] = 1;
+        long[] pattern = new long[1000];
+        for (int i = 0; i < 1000; i++) {
+            pattern[i] = 10;
+
 
         }
         return pattern;
@@ -133,24 +153,26 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
 
 
         //start with an initial pattern
-        mainFreq=1;
+        mainFreq=5;
         modFreq=0;
         long[] mVibratePattern = createDurations();
         int[] primaryFreq = createPattern(power,mainFreqs[mainFreq],true);
         int[] moduFreq=createPattern(power,modFreqs[modFreq],false);
         VibrationData vd= VibrationData.getInstance();
-        vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 0);
+        vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), -1);
         vd.main=mainFreqs[mainFreq];
         vd.mod=modFreqs[modFreq];
         Intent msgIntent = new Intent(MainActivity.this, VibrationService.class);
         startService(msgIntent);
-/*
+        /*
+        long[] vduration={1000,1};
+        int[] vpower={254,0};
+        final Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        VibrationEffect ef=VibrationEffect.createWaveform(vduration,vpower, 0);
+        vibrator.vibrate(ef); */
+
         int[] temp=modulate(primaryFreq,moduFreq);
-        String buffer="";
-        for (int i=0; i< temp.length;i++) {
-            buffer=buffer+moduFreq[i]+",";
-        }
-        Log.i("buffer",buffer);*/
+
 
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 /*
@@ -182,7 +204,7 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
                 int[] primaryFreq = createPattern(power,mainFreqs[mainFreq],true);
                 int[] moduFreq=createPattern(power,modFreqs[modFreq],false);
                 VibrationData vd= VibrationData.getInstance();
-                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 0);
+                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), -1);
                 vd.main=mainFreqs[mainFreq];
                 vd.mod=modFreqs[modFreq];
 
@@ -215,7 +237,9 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
                 int[] primaryFreq = createPattern(power,mainFreqs[mainFreq],true);
                 int[] moduFreq=createPattern(power,modFreqs[modFreq],false);
                 VibrationData vd= VibrationData.getInstance();
-                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 0);
+                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), -1);
+                primaryFreq=moduFreq=null;
+                System.gc();
                 vd.main=mainFreqs[mainFreq];
                 vd.mod=modFreqs[modFreq];
 
@@ -243,7 +267,9 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
                 int[] primaryFreq = createPattern(power,mainFreqs[mainFreq],true);
                 int[] moduFreq=createPattern(power,modFreqs[modFreq],false);
                 VibrationData vd= VibrationData.getInstance();
-                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 0);
+                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 1);
+                primaryFreq=moduFreq=null;
+                System.gc();
                 vd.main=mainFreqs[mainFreq];
                 vd.mod=modFreqs[modFreq];
 
@@ -268,7 +294,9 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
                 int[] primaryFreq = createPattern(power,mainFreqs[mainFreq],true);
                 int[] moduFreq=createPattern(power,modFreqs[modFreq],false);
                 VibrationData vd= VibrationData.getInstance();
-                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 0);
+                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), -1);
+                primaryFreq=moduFreq=null;
+                System.gc();
                 vd.main=mainFreqs[mainFreq];
                 vd.mod=modFreqs[modFreq];
 
@@ -306,9 +334,11 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
                 VibrationData vd= VibrationData.getInstance();
 
 
-                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), 0);
+                vd.effect = VibrationEffect.createWaveform(mVibratePattern, modulate(primaryFreq,moduFreq), -1);
                 vd.main=mainFreqs[mainFreq];
                 vd.mod=modFreqs[modFreq];
+                primaryFreq=moduFreq=null;
+                System.gc();
                 vd.power=progress;
 
                 //start the vibration service

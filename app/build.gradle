@@ -10,8 +10,8 @@ android {
         applicationId "com.neurelectrics.openwave"
         minSdkVersion 28
         targetSdkVersion 30
-        versionCode 12
-        versionName "1.2"
+        versionCode 15
+        versionName "1.5"
 
     }
 
