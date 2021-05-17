@@ -35,11 +35,11 @@ import static android.content.Context.VIBRATOR_SERVICE;
 
 
 public class MainActivity extends WearableActivity {
-int mainFreq=5;
+int mainFreq=18;
 int modFreq=0;
 int power=255;
-String[] freqDes={"7 Hz","10 Hz","15 Hz","20 Hz","25 Hz","Max"};
-int[] mainFreqs={7,10,15,20,25,-1};
+String[] freqDes={"0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","0.6 Hz","0.7 Hz","0.8 Hz","0.9 Hz","1 Hz","2 Hz","3 Hz","4 Hz","5 Hz","6 Hz","7 Hz","8 Hz","9 Hz","10 Hz","15 Hz","20 Hz","25 Hz","Max"};
+double[] mainFreqs={0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,2,3,4,5,6,7,8,9,10,15,20,25,-1};
 PendingIntent pi;
 double[] modFreqs={-1, 0.1,0.2,0.3,0.4,0.5,1,2,3,4,5,6,7,8,9,10,15,20,25};
 String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz","2 Hz","3 Hz","4 Hz","5 Hz","6 Hz","7 Hz","8 Hz","9 Hz","10 Hz","15 Hz","20 Hz","25 Hz"};
@@ -153,7 +153,7 @@ String[] modFreqDes={"None","0.1 Hz","0.2 Hz","0.3 Hz","0.4 Hz","0.5 Hz","1 Hz",
 
 
         //start with an initial pattern
-        mainFreq=5;
+        mainFreq=18;
         modFreq=0;
         long[] mVibratePattern = createDurations();
         int[] primaryFreq = createPattern(power,mainFreqs[mainFreq],true);
