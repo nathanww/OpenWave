@@ -1,0 +1,23 @@
+{
+  "devDependencies": {
+    "@fitbit/sdk": "~5.0.0"
+  },
+  "fitbit": {
+    "appUUID": "9bcf6be4-1ad5-4d4c-939d-52211234d886",
+    "appType": "app",
+    "appDisplayName": "OpenWave",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#e91e63",
+    "requestedPermissions": [],
+    "buildTargets": [
+      "atlas",
+      "vulcan"
+    ],
+    "i18n": {
+      "en-US": {
+        "name": "OpenWave"
+      }
+    },
+    "defaultLanguage": "en-US"
+  }
+}

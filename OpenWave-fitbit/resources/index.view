@@ -1,0 +1,16 @@
+<svg>
+<svg class="background">
+  <use id="button-1" href="#text-button" class="text-button bottom left secondary"  fill="fb-blue"/>
+<use id="button-2" href="#text-button" class="text-button bottom right"  fill="fb-blue"/>
+
+</svg>
+  
+  <svg class="horizontal-pad" >
+    <use href="#dynamic-textarea" class="p2 foreground-fill" y="50" id="freqDisplay">
+      <set href="text" attributeName="text-buffer" to=""/>
+      <set href="text" attributeName="text-length" to="20"/>
+      <set href="text" attributeName="font-size" to="90"/>
+    </use>
+  </svg>
+  
+</svg>
